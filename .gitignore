@@ -1,11 +1,11 @@
-/node_modules/
+**/node_modules/
 /lib/
 /test/
 custom-elements.json
 # top level source
-my-element.js
-my-element.js.map
-my-element.d.ts
-my-element.d.ts.map
+combo-box.js
+combo-box.js.map
+combo-box.d.ts
+combo-box.d.ts.map
 # only generated for size check
-my-element.bundled.js
+combo-box.bundled.js

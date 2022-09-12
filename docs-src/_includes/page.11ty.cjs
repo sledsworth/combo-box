@@ -1,10 +1,10 @@
-const header = require('./header.11ty.cjs');
-const footer = require('./footer.11ty.cjs');
-const nav = require('./nav.11ty.cjs');
-const relative = require('./relative-path.cjs');
+const header = require('./header.11ty.cjs')
+const footer = require('./footer.11ty.cjs')
+const nav = require('./nav.11ty.cjs')
+const relative = require('./relative-path.cjs')
 
 module.exports = function (data) {
-  const {title, page, content} = data;
+  const {title, page, content} = data
   return `
 <!doctype html>
 
@@ -20,7 +20,7 @@ module.exports = function (data) {
     <script src="/node_modules/lit/polyfill-support.js"></script>
     <script type="module" src="${relative(
       page.url,
-      '/my-element.bundled.js'
+      '/combo-box.bundled.js'
     )}"></script>
   </head>
   <body>
@@ -33,5 +33,5 @@ module.exports = function (data) {
     </div>
     ${footer()}
   </body>
-</html>`;
-};
+</html>`
+}

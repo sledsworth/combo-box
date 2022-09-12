@@ -6,19 +6,19 @@ module.exports = class Docs {
   data() {
     return {
       layout: 'page.11ty.cjs',
-      title: '<my-element> ⌲ Docs',
-    };
+      title: '<combo-box> ⌲ Docs',
+    }
   }
 
   render(data) {
-    const manifest = data.api['11tydata'].customElements;
+    const manifest = data.api['11tydata'].customElements
     const elements = manifest.modules.reduce(
       (els, module) =>
         els.concat(
           module.declarations?.filter((dec) => dec.customElement) ?? []
         ),
       []
-    );
+    )
     return `
      <h1>API</h1>
      ${elements
@@ -71,24 +71,24 @@ module.exports = class Docs {
        `
        )
        .join('')}
-   `;
+   `
   }
-};
+}
 
 /**
  * Reads a (possibly deep) path off of an object.
  */
 const get = (obj, path) => {
-  let fallback = '';
+  let fallback = ''
   if (Array.isArray(path)) {
-    [path, fallback] = path;
+    ;[path, fallback] = path
   }
-  const parts = path.split('.');
+  const parts = path.split('.')
   while (obj && parts.length) {
-    obj = obj[parts.shift()];
+    obj = obj[parts.shift()]
   }
-  return obj == null || obj === '' ? fallback : obj;
-};
+  return obj == null || obj === '' ? fallback : obj
+}
 
 /**
  * Renders a table of data, plucking the given properties from each item in
@@ -96,7 +96,7 @@ const get = (obj, path) => {
  */
 const renderTable = (name, properties, data) => {
   if (data === undefined || data.length === 0) {
-    return '';
+    return ''
   }
   return `
    ${name ? `<h3>${name}</h3>` : ''}
@@ -121,7 +121,7 @@ const renderTable = (name, properties, data) => {
        )
        .join('')}
    </table>
- `;
-};
+ `
+}
 
-const capitalize = (s) => s[0].toUpperCase() + s.substring(1);
+const capitalize = (s) => s[0].toUpperCase() + s.substring(1)

@@ -1,22 +1,108 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>&lt;my-element> Demo</title>
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../node_modules/lit/polyfill-support.js"></script>
-    <script type="module" src="../my-element.js"></script>
-    <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <my-element>
-      <p>This is child content</p>
-    </my-element>
-  </body>
+
+<head>
+	<meta charset="utf-8" />
+	<title>&lt;combo-box> Demo</title>
+	<script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+	<script src="../node_modules/lit/polyfill-support.js"></script>
+	<script type="module" src="../combo-box.js"></script>
+	<style>
+		body {
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		}
+
+		/* li button,
+		li a {
+			display: inline-block;
+			width: 100%;
+			box-sizing: border-box;
+			padding: 1rem;
+			appearance: none;
+			border: none;
+			background: transparent;
+			font-size: inherit;
+			text-align: left;
+		} */
+
+		/* a {
+			text-decoration: none;
+			color: black;
+		} */
+
+		.secondary {
+			color: grey;
+		}
+
+		#default::after {
+			content: '';
+			border-bottom: 1px solid #aaa;
+		}
+	</style>
+</head>
+
+<body>
+	<combo-box style="width: 400px;">
+		<li role="option" id="default" data-value="Some value" data-label="some label">
+			<span>Default Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-1" data-value="Some value" data-label="some label">
+			<span>1 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-2" data-value="Some value" data-label="some label">
+			<span>2 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-3" data-value="Some value" data-label="some label">
+			<span>3 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-4" data-value="Some value" data-label="some label">
+			<span>4 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-5" data-value="Some value" data-label="some label">
+			<span>5 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-6" data-value="Some value" data-label="some label">
+			<span>6 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-7" data-value="Some value" data-label="some label">
+			<span>7 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li id="test-no-role" disabled data-value="Some value" data-label="some label">
+			<span>No Role Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+		<li role="option" id="test-8" data-value="Some value" data-label="some label">
+			<span>8 Primary Test</span>
+			<span class="secondary">(Secondary Test)</span>
+		</li>
+	</combo-box>
+	<script>
+		const b = document.querySelector('#test-button')
+		if (b) {
+			b.addEventListener('click', () => {
+				console.log('test button primary 6 clicked!')
+			})
+		}
+		const comboBox = document.querySelector('combo-box')
+
+		comboBox.addEventListener('select', (e) => {
+			console.log(e)
+			comboBox.value = e.detail.value
+		})
+		comboBox.addEventListener('input', (e) => {
+			console.log(e, e.detail.value)
+			// comboBox.value = e.detail.value
+		})
+	</script>
+</body>
+
 </html>

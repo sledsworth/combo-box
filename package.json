@@ -55,6 +55,7 @@
 		"@web/dev-server": "^0.1.31",
 		"@web/dev-server-legacy": "^1.0.0",
 		"@web/test-runner": "^0.14.0",
+		"@web/test-runner-commands": "^0.6.5",
 		"@web/test-runner-playwright": "^0.8.8",
 		"@webcomponents/webcomponentsjs": "^2.6.0",
 		"eslint": "^8.23.0",

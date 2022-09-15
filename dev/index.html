@@ -39,52 +39,59 @@
 			content: '';
 			border-bottom: 1px solid #aaa;
 		}
+
+		combo-box::part(input) {
+			color: red;
+		}
 	</style>
 </head>
 
 <body>
-	<combo-box style="width: 400px;">
-		<li role="option" id="default" data-value="Some value" data-label="some label">
-			<span>Default Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-1" data-value="Some value" data-label="some label">
-			<span>1 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-2" data-value="Some value" data-label="some label">
-			<span>2 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-3" data-value="Some value" data-label="some label">
-			<span>3 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-4" data-value="Some value" data-label="some label">
-			<span>4 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-5" data-value="Some value" data-label="some label">
-			<span>5 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-6" data-value="Some value" data-label="some label">
-			<span>6 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-7" data-value="Some value" data-label="some label">
-			<span>7 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li id="test-no-role" disabled data-value="Some value" data-label="some label">
-			<span>No Role Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-		<li role="option" id="test-8" data-value="Some value" data-label="some label">
-			<span>8 Primary Test</span>
-			<span class="secondary">(Secondary Test)</span>
-		</li>
-	</combo-box>
+	<label>Label
+		<combo-box input-id="test-id" style="width: 400px;">
+			<li role="option" id="default" data-value="Some value" data-label="some label">
+				<span>Default Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-1" data-value="Some value" data-label="some label">
+				<span>1 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-2" data-value="Some value" data-label="some label">
+				<span>2 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-3" data-value="Some value" data-label="some label">
+				<span>3 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-4" data-value="Some value" data-label="some label">
+				<span>4 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-5" data-value="Some value" data-label="some label">
+				<span>5 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-6" data-value="Some value" data-label="some label">
+				<span>6 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-7" data-value="Some value" data-label="some label">
+				<span>7 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li id="test-no-role" disabled data-value="Some value" data-label="some label">
+				<span>No Role Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<li role="option" id="test-8" data-value="Some value" data-label="some label">
+				<span>8 Primary Test</span>
+				<span class="secondary">(Secondary Test)</span>
+			</li>
+			<div slot="indicator">loading...</div>
+		</combo-box>
+	</label>
 	<script>
 		const b = document.querySelector('#test-button')
 		if (b) {

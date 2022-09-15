@@ -8,26 +8,42 @@ import {
   queryAssignedElements,
 } from 'lit/decorators.js'
 import {ifDefined} from 'lit/directives/if-defined.js'
-import AnacapriEvent from './utils/AnacapriEvent'
+import AnacapriEvent from './AnacapriEvent'
 
 /**
+ * The Combo Box provides the user with a text input field and suggestions as they type.
+ * Clicking on a suggestion prefills the text input field.
  *
+ * The main purpose of the combo box is to:
+ *  - attach all necessary aria labels to make the provided options accessible to all users
+ *  - expand and collapse the suggestions as focus changes
+ *  - provide a developer hooks into selected options and user input
  *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
+ * What this component does not do is filter suggestions based on user input, the developer
+ * is responsible for providing the suggestions as li elements to the Combo Box.
+ *
+ * @fires select - The option the user has selected from the suggestions box
+ * @fires input - The input the user has typed in the field
+ *
+ * @slot - The li elements to provide to the user as options
+ * @slot indicator - A loading or success indicator to give the user feedback on the status
+ * 	of the dropdown state or selected option choice.
+ * @csspart input - The input element of the combo box
+ * @csspart suggestion-list - The ul element that contains the offered suggestions of the combo box
+ * @csspart suggestion-selected - The currently highlighted suggestion in the list of the combo box
  */
 @customElement('combo-box')
 export class ComboBox extends LitElement {
+  static formAssociated = true
   static override styles = css`
     * {
       box-sizing: border-box;
     }
 
     :host {
-      --ana-border-radius: 2px;
-      --ana-box-shadow: 0px 8px 16px 0px rgb(0 0 0 / 20%);
-      --ana-color-background-selected: #e4f4fe;
+      --border-radius: 2px;
+      --box-shadow: 0px 8px 16px 0px rgb(0 0 0 / 20%);
+      --color-background-selected: #e4f4fe;
 
       position: relative;
       display: inline-block;
@@ -37,23 +53,23 @@ export class ComboBox extends LitElement {
       width: 100%;
       font-size: 1rem;
       padding: 0.3125rem 0.5rem 0.375rem;
-      border-radius: var(--ana-border-radius);
+      border-radius: var(--border-radius);
       border: 1px solid #aaa;
-      margin: 0 0.5rem 1rem 0;
+      /* margin: 0 0.5rem 1rem 0; */
       display: inline-block;
       position: relative;
     }
 
     ul {
-      margin: -1rem 0 0;
+      margin: 0;
       position: absolute;
       padding: 0;
       width: 100%;
       list-style: none;
       visibility: hidden;
-      border-radius: var(--ana-border-radius);
+      border-radius: var(--border-radius);
       border: 1px solid #aaa;
-      box-shadow: var(--ana-box-shadow);
+      box-shadow: var(--box-shadow);
       max-height: 18rem;
       font-size: 1rem;
       overflow-x: auto;
@@ -68,7 +84,7 @@ export class ComboBox extends LitElement {
       position: absolute;
       right: 0.5rem;
       top: 0;
-      height: 2rem;
+      height: 100%;
       display: flex;
       align-items: center;
     }
@@ -79,8 +95,8 @@ export class ComboBox extends LitElement {
     }
 
     ::slotted(li[aria-selected='true']) {
-      background-color: var(--ana-color-background-selected);
-      color: var(--ana-color-forground-selected);
+      background-color: var(--color-background-selected);
+      color: var(--color-forground-selected);
     }
 
     ::slotted(li[disabled]) {
@@ -89,10 +105,10 @@ export class ComboBox extends LitElement {
       cursor: default;
     }
   `
-  eventAbortController = new AbortController()
+  private eventAbortController = new AbortController()
 
-  pointerX?: number
-  pointerY?: number
+  private pointerX?: number
+  private pointerY?: number
 
   @state()
   selectedItem?: HTMLLIElement | null
@@ -100,14 +116,17 @@ export class ComboBox extends LitElement {
   @state()
   isExpanded = false
 
-  @property()
+  @property({attribute: 'value'})
   value = ''
 
   @property()
-  isTrackingSelection = false
-
-  @property()
   label?: string
+
+  @property({attribute: 'input-id'})
+  inputId?: string
+
+  @property({attribute: 'allow-navigation-wrap'})
+  allowNavigationWrap = false
 
   @query('input')
   input?: HTMLInputElement
@@ -116,7 +135,7 @@ export class ComboBox extends LitElement {
   listItems!: Array<HTMLLIElement>
 
   override render() {
-    console.log(this.listItems.length, this.selectedItem)
+    // console.log(this.listItems.length, this.selectedItem)
 
     // this.listItems.forEach((element) => {
     //   element.setAttribute(
@@ -127,14 +146,14 @@ export class ComboBox extends LitElement {
 
     return html`
       <input
-        id="ana-combo-box-input"
+        part="input"
+        id=${ifDefined(this.inputId)}
         role="combobox"
         aria-label="${ifDefined(this.label)}"
         aria-autocomplete="list"
         aria-haspopup="listbox"
-        aria-controls="ana-combo-box-suggestions"
+        aria-controls="combo-box-suggestion-list"
         aria-activedescendant="${ifDefined(this.selectedItem?.id)}"
-        @blur=${this.handleBlurInput}
         @focus=${this.handleFocusInput}
         @keydown=${this.handleKeyboardInput}
         @input=${this.handleInput}
@@ -144,7 +163,8 @@ export class ComboBox extends LitElement {
         <slot name="indicator"></slot>
       </div>
       <ul
-        id="ana-combo-box-suggestions"
+        part="suggestion-list"
+        id="combo-box-suggestion-list"
         role="listbox"
         aria-expanded="${this.isExpanded}"
         @click=${this.commitSelection}
@@ -152,6 +172,10 @@ export class ComboBox extends LitElement {
         <slot @slotchange=${this.handleSlotchange}></slot>
       </ul>
     `
+  }
+
+  override focus() {
+    this.input?.focus()
   }
 
   private handleInput(e: Event) {
@@ -173,57 +197,62 @@ export class ComboBox extends LitElement {
     }
   }
 
-  private handleBlurInput(e: FocusEvent) {
-    // e.preventDefault()
-    console.log(
-      'blur',
-      e.relatedTarget && !this.contains(e.relatedTarget as HTMLElement),
-      e.relatedTarget,
-      this
-    )
-    if (e.relatedTarget && !this.contains(e.relatedTarget as HTMLElement)) {
-      this.isExpanded = false
-    }
-  }
+  // private handleBlurInput(e: FocusEvent) {
+  //   // e.preventDefault()
+  //   console.log(
+  //     'blur',
+  //     e.target,
+  //     e.relatedTarget && !this.contains(e.relatedTarget as HTMLElement),
+  //     e.relatedTarget,
+  //     this
+  //   )
+  //   if (e.relatedTarget && !this.contains(e.relatedTarget as HTMLElement)) {
+  //     this.isExpanded = false
+  //   }
+  // }
 
   private handleKeyboardInput(e: KeyboardEvent) {
-    const selectedItemIndex = this.selectedItem
-      ? this.listItems.indexOf(this.selectedItem)
-      : -1
-    const nextIndex = selectedItemIndex + 1
-    const lastIndex = selectedItemIndex - 1
+    // const selectedItemIndex = this.selectedItem
+    //   ? this.listItems.indexOf(this.selectedItem)
+    //   : -1
+    // const nextIndex = selectedItemIndex + 1
+    // const lastIndex = selectedItemIndex - 1
 
     switch (e.key) {
       case 'Enter':
         e.preventDefault()
-        // this.selectedItem?.click()
         this.commitSelection()
         break
       case 'ArrowDown':
         e.preventDefault()
-        this.selectedItem?.setAttribute('aria-selected', 'false')
-        if (nextIndex < this.listItems.length) {
-          this.selectedItem = this.listItems[nextIndex]
-          this.selectedItem?.scrollIntoView()
-        } else {
-          this.selectedItem = this.listItems[0]
-          this.selectedItem?.scrollIntoView()
-        }
-        this.selectedItem?.setAttribute('aria-selected', 'true')
+        this.navigateSelection(1)
+        // this.selectedItem?.setAttribute('aria-selected', 'false')
+        // if (nextIndex < this.listItems.length) {
+        //   this.selectedItem = this.listItems[nextIndex]
+        //   this.selectedItem?.scrollIntoView()
+        // } else {
+        //   this.selectedItem = this.listItems[0]
+        //   this.selectedItem?.scrollIntoView()
+        // }
+        // this.selectedItem?.setAttribute('aria-selected', 'true')
         break
       case 'ArrowUp':
         e.preventDefault()
-        this.selectedItem?.setAttribute('aria-selected', 'false')
-        if (lastIndex >= 0) {
-          this.selectedItem = this.listItems[lastIndex]
-          this.selectedItem?.scrollIntoView()
-        } else {
-          this.selectedItem = this.listItems[this.listItems.length - 1]
-          this.selectedItem?.scrollIntoView()
-        }
-        this.selectedItem?.setAttribute('aria-selected', 'true')
+        this.navigateSelection(-1)
+        // this.selectedItem?.setAttribute('aria-selected', 'false')
+        // if (lastIndex >= 0) {
+        //   this.selectedItem = this.listItems[lastIndex]
+        //   this.selectedItem?.scrollIntoView()
+        // } else {
+        //   this.selectedItem = this.listItems[this.listItems.length - 1]
+        //   this.selectedItem?.scrollIntoView()
+        // }
+        // this.selectedItem?.setAttribute('aria-selected', 'true')
         break
       case 'Escape':
+        this.isExpanded = false
+        break
+      case 'Tab':
         this.isExpanded = false
         break
       default:
@@ -231,6 +260,47 @@ export class ComboBox extends LitElement {
         this.selectedItem = null
         this.listItems[0]?.scrollIntoView()
     }
+  }
+
+  private navigateSelection(step: -1 | 1) {
+    const currentIndex = this.selectedItem
+      ? this.listItems.indexOf(this.selectedItem)
+      : -1
+    let nextIndex = currentIndex + step
+    if (nextIndex < 0 && this.allowNavigationWrap) {
+      nextIndex = this.listItems.length - 1
+    }
+    if (nextIndex >= this.listItems.length) {
+      nextIndex = this.allowNavigationWrap
+        ? nextIndex % this.listItems.length
+        : (nextIndex = this.listItems.length - 1)
+    }
+    this.selectSuggestion(this.listItems[nextIndex])
+    // if (nextIndex >= 0) {
+    //   if (!this.allowNavigationWrap) {
+    //     if (nextIndex < this.listItems.length) {
+    //       this.selectSuggestion(this.listItems[nextIndex])
+    //     }
+    //   } else {
+    //     this.selectSuggestion(this.listItems[nextIndex % this.listItems.length])
+    //   }
+    // }
+  }
+
+  private deselectSuggestion(suggestion: HTMLLIElement) {
+    suggestion.setAttribute('aria-selected', 'false')
+    suggestion.removeAttribute('part')
+    this.selectedItem = null
+  }
+
+  private selectSuggestion(suggestion: HTMLLIElement) {
+    if (this.selectedItem) {
+      this.deselectSuggestion(this.selectedItem)
+    }
+    suggestion.setAttribute('aria-selected', 'true')
+    suggestion.setAttribute('part', 'suggestion-selected')
+    suggestion.scrollIntoView()
+    this.selectedItem = suggestion
   }
 
   private handleSlotchange() {
@@ -244,7 +314,7 @@ export class ComboBox extends LitElement {
         (e: PointerEvent) => {
           if (e.x !== this.pointerX || e.y !== this.pointerY) {
             this.selectedItem?.setAttribute('aria-selected', 'false')
-            console.log('triggered mouse over')
+            // console.log('triggered mouse over')
             this.selectedItem = element as HTMLLIElement
             this.selectedItem?.setAttribute('aria-selected', 'true')
           }
@@ -268,6 +338,9 @@ export class ComboBox extends LitElement {
       })
       this.dispatchEvent(event)
       this.input?.focus()
+      this.selectedItem?.setAttribute('aria-selected', 'false')
+      this.selectedItem = null
+      this.isExpanded = false
       // console.log('click', target)
       // target?.click()
     }
@@ -279,6 +352,14 @@ export class ComboBox extends LitElement {
     document.addEventListener('pointermove', (e: PointerEvent) => {
       this.pointerX = e.x
       this.pointerY = e.y
+    })
+    document.addEventListener('click', (e: MouseEvent) => {
+      // console.log(e.target, e.relatedTarget)
+      if (e.target && this.contains(e.target as HTMLElement)) {
+        this.input?.focus()
+      } else {
+        this.isExpanded = false
+      }
     })
   }
 

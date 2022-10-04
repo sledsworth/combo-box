@@ -16,28 +16,12 @@ suite('combo-box', () => {
     assert.instanceOf(el, ComboBox)
   })
 
-  // test('hides combo box suggestions initially', () => {
-  //   const el = document.createElement('combo-box')
-  //   const suggestions = el.querySelector('ul')
-  //   console.log(el.innerHTML, suggestions)
-  //   assert.isFalse(suggestions?.ariaExpanded)
-  // })
-
   test('renders with default values', async () => {
     const el = await fixture(html`<combo-box></combo-box>`)
     const suggestions = el.shadowRoot?.querySelector(
       '#combo-box-suggestion-list'
     )
     assert.equal(suggestions?.getAttribute('aria-expanded'), 'false')
-
-    // assert.shadowDom.equal(
-    //   el,
-    //   `
-    //   <h1>Hello, World!</h1>
-    //   <button part="button">Click Count: 0</button>
-    //   <slot></slot>
-    // `
-    // );
   })
 
   test('Should not display the suggestion box if items are not available and the input element is focused', async () => {
@@ -153,10 +137,10 @@ suite('combo-box', () => {
     const input = el.shadowRoot?.querySelector('input')
     input?.focus()
     await el.updateComplete
-    assert.isUndefined(el.selectedItem)
+    assert.isNotOk(el.selectedSuggestion)
     await sendKeys({press: 'ArrowDown'})
     await el.updateComplete
-    assert.equal(el.selectedItem, el.listItems[0])
+    assert.equal(el.selectedSuggestion, el.suggestionItemElements[0])
   })
 
   test('Should be able to select and cycle the suggestions with the arrow down key.', async () => {
@@ -172,13 +156,13 @@ suite('combo-box', () => {
     const input = el.shadowRoot?.querySelector('input')
     input?.focus()
     await el.updateComplete
-    assert.isUndefined(el.selectedItem)
+    assert.isNotOk(el.selectedSuggestion)
     for (let i = 0; i < 7; i++) {
       await sendKeys({press: 'ArrowDown'})
       await el.updateComplete
       const id = orderedIds[i % 3]
       const element = el.querySelector(`#${id}`)
-      assert.equal(el.selectedItem, element)
+      assert.equal(el.selectedSuggestion, element)
     }
   })
 
@@ -195,13 +179,13 @@ suite('combo-box', () => {
     const input = el.shadowRoot?.querySelector('input')
     input?.focus()
     await el.updateComplete
-    assert.isUndefined(el.selectedItem)
+    assert.isNotOk(el.selectedSuggestion)
     for (let i = 0; i < 7; i++) {
       await sendKeys({press: 'ArrowUp'})
       await el.updateComplete
       const id = orderedIds[i % 3]
       const element = el.querySelector(`#${id}`)
-      assert.equal(el.selectedItem, element)
+      assert.equal(el.selectedSuggestion, element)
     }
   })
 
@@ -215,16 +199,16 @@ suite('combo-box', () => {
       </combo-box>`
     )) as ComboBox
 
-    // const suggestions = el.shadowRoot?.querySelector(
-    //   '#combo-box-suggestion-list'
-    // )
     const input = el.shadowRoot?.querySelector('input')
     input?.focus()
     await el.updateComplete
-    assert.isUndefined(el.selectedItem)
+    assert.isNotOk(el.selectedSuggestion)
     await sendKeys({press: 'ArrowUp'})
     await el.updateComplete
-    assert.equal(el.selectedItem, el.listItems[el.listItems.length - 1])
+    assert.equal(
+      el.selectedSuggestion,
+      el.suggestionItemElements[el.suggestionItemElements.length - 1]
+    )
   })
 
   test('Should find all list item elements passed in that are not disabled as potential selectable elements.', async () => {
@@ -239,7 +223,7 @@ suite('combo-box', () => {
     )) as ComboBox
 
     await el.updateComplete
-    assert.equal(el.listItems.length, 3)
+    assert.equal(el.suggestionItemElements.length, 3)
   })
 
   test('Should find all list item elements passed in that are not disabled as potential selectable elements.', async () => {
@@ -254,7 +238,7 @@ suite('combo-box', () => {
     )) as ComboBox
 
     await el.updateComplete
-    assert.equal(el.listItems.length, 3)
+    assert.equal(el.suggestionItemElements.length, 3)
   })
 
   test('Should select the item in the list on mouse entering the list item element.', async () => {
@@ -280,7 +264,7 @@ suite('combo-box', () => {
       position: [Math.floor(rect?.x || 0) + 1, Math.floor(rect?.y || 0) + 1],
     })
     await el.updateComplete
-    assert.equal(el.selectedItem, target)
+    assert.equal(el.selectedSuggestion, target)
   })
 
   test('Should fire select event when item is clicked on.', async () => {

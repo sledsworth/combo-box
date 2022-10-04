@@ -41,57 +41,85 @@
 		}
 
 		combo-box::part(input) {
-			color: red;
+			width: 100%;
+			font-size: 1rem;
+			padding: 0.3125rem 0.5rem 0.375rem;
+			border-radius: var(--border-radius);
+			border: 1px solid #aaa;
+			/* margin: 0 0.5rem 1rem 0; */
+			display: inline-block;
+			position: relative;
+		}
+
+		combo-box::part(suggestion-list) {
+			border-radius: 8px;
+			border: 1px solid black;
+			max-height: 18rem;
+			font-size: 1rem;
+		}
+
+		combo-box li {
+			padding: 0.5rem 1rem;
+		}
+
+		combo-box li.selected {
+			background-color: lightblue;
+			color: navy;
+		}
+
+		combo-box li[disabled] {
+			text-decoration: line-through;
 		}
 	</style>
 </head>
 
 <body>
-	<label>Label
-		<combo-box input-id="test-id" style="width: 400px;">
-			<li role="option" id="default" data-value="Some value" data-label="some label">
-				<span>Default Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-1" data-value="Some value" data-label="some label">
-				<span>1 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-2" data-value="Some value" data-label="some label">
-				<span>2 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-3" data-value="Some value" data-label="some label">
-				<span>3 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-4" data-value="Some value" data-label="some label">
-				<span>4 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-5" data-value="Some value" data-label="some label">
-				<span>5 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-6" data-value="Some value" data-label="some label">
-				<span>6 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-7" data-value="Some value" data-label="some label">
-				<span>7 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li id="test-no-role" disabled data-value="Some value" data-label="some label">
-				<span>No Role Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<li role="option" id="test-8" data-value="Some value" data-label="some label">
-				<span>8 Primary Test</span>
-				<span class="secondary">(Secondary Test)</span>
-			</li>
-			<div slot="indicator">loading...</div>
-		</combo-box>
-	</label>
+	<form>
+		<label for="combo-box">Label
+			<combo-box id="combo-box" style="width: 400px;">
+				<li id="default" data-value="Some value">
+					<span>Default Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-1" data-value="Some value">
+					<span>1 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-2" data-value="Some value">
+					<span>2 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-3" data-value="Some value">
+					<span>3 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-4" data-value="Some value">
+					<span>4 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-5" data-value="Some value">
+					<span>5 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-6" data-value="Some value">
+					<span>6 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-7" data-value="Some value">
+					<span>7 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-disabled" disabled data-value="Some value">
+					<span>Disabled Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+				<li id="test-8" data-value="Some value">
+					<span>8 Primary Test</span>
+					<span class="secondary">(Secondary Test)</span>
+				</li>
+			</combo-box>
+		</label>
+	</form>
 	<script>
 		const b = document.querySelector('#test-button')
 		if (b) {

@@ -1,5 +1,5 @@
 **/node_modules/
-/lib/
+/utils/
 /test/
 custom-elements.json
 # top level source
@@ -9,6 +9,3 @@ combo-box.d.ts
 combo-box.d.ts.map
 # only generated for size check
 combo-box.bundled.js
-
-AnacapriEvent.**
-debounce.**
